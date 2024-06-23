@@ -1,4 +1,11 @@
-Galacksi Orbit: A multiplayer space shooter set in the Galacksi universe
+Galacksi Orbit
+========================================================================================================================
+*Multiplayer space shooter set in the Galacksi universe*
+
+
+License (AGPL3 & CC-BY-SA-4)
+------------------------------------------------------------------------------------------------------------------------
+Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe  
 Copyright (C) 2025 Asmov LLC
 
 This distribution is comprised of Software and Multimedia assets (images, videos, sounds, music, etc.).

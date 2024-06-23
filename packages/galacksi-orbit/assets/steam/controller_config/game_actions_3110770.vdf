@@ -1,0 +1,68 @@
+"In Game Actions"
+{
+	"actions"
+	{
+		"Game"
+		{
+			"title"					"#Set_Game"
+			"StickPadGyro"
+			{
+				"Move"
+				{
+					"title"			"#Action_Move"
+					"input_mode"	"joystick_move"
+				}
+                "Aim"
+                {
+                    "title"         "#Action_Aim"
+                    "input_mode"    "joystick_move"
+                }
+			}
+            AnalogTrigger
+            {
+            }
+			"Button"
+			{
+				"menu"      		"#Action_Menu"
+			}
+		}
+		"Menu"
+		{
+			"title"		"#Set_Menu"
+			"StickPadGyro"
+			{
+			}
+			"AnalogTrigger"
+			{
+			}
+			"Button"
+			{
+				"menu_up"		"#Menu_Up"
+				"menu_down"		"#Menu_Down"
+				"menu_left"		"#Menu_Left"
+				"menu_right"	"#Menu_Right"
+				"menu_select"	"#Menu_Select"
+				"menu_cancel"	"#Menu_Cancel"
+				"menu"	        "#Action_ExitMenu"
+			}
+		}
+	}
+	"localization"
+	{
+		"english"
+		{
+			"Set_Game"			    "Game Controls"
+			"Set_Menu"				"Menu Controls"
+			"Action_Move"			"Movement"
+			"Action_Aim"			"Aiming"
+			"Action_Menu"			"Open Menu"
+			"Action_ExitMenu"	    "Exit Menu"
+			"Menu_Up"				"Up"
+			"Menu_Down"				"Down"
+			"Menu_Left"				"Left"
+			"Menu_Right"			"Right"
+			"Menu_Select"			"Select"
+			"Menu_Cancel"			"Cancel"
+		}
+	}
+}

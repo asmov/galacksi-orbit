@@ -1,13 +1,20 @@
 [package]
 name = "galacksi-orbit"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 description = "Multiplayer space shooter based in the Galacksi universe"
 authors = ["Asmov LLC <development.pub@asmov.software>"]
 repository = "https://github.com/asmov/galacks-orbit"
-license = "GPL-3.0-or-later"
+license = "AGPL-3.0-or-later"
 keywords = ["galacksi", "orbit", "multiplayer", "space", "shooter"]
 categories = ["games"]
 
 [dependencies]
+bevy = "0.15"
+bevy-steamworks = { optional = true, version = "0", features = ["serde"] }
+rand = "0"
+strum = { version = "0", features = ["derive"] }
 
+[features]
+default = []
+steam = ["bevy-steamworks"]
