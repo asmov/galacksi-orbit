@@ -1,0 +1,13 @@
+[package]
+name = "galacksi-orbit"
+version = "0.1.0"
+edition = "2021"
+description = "Multiplayer space shooter based in the Galacksi universe"
+authors = ["Asmov LLC <development.pub@asmov.software>"]
+repository = "https://github.com/asmov/galacks-orbit"
+license = "GPL-3.0-or-later"
+keywords = ["galacksi", "orbit", "multiplayer", "space", "shooter"]
+categories = ["games"]
+
+[dependencies]
+
