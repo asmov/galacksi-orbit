@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use crate::{model::*, input::consts::*};
+use crate::{model::*, consts::*};
+use super::*;
 
 /// Handles keyboard and mouse input for the game.
 ///
@@ -17,62 +18,78 @@ use crate::{model::*, input::consts::*};
 /// N sets rotation speed to 50%
 /// M sets rotation speed to 25%
 ///
-pub fn game_keyboard_mouse_input(
+pub fn system_update_game_input_keyboard_mouse(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     //mouse_input: Res<Input<MouseButton>>,
-    mut query: Query<(&mut Transform, &mut Position), With<Orb>>
+    mut query: Query<(&LocalPlayer, &mut Motion, &mut UseActions),With<Orb>>
 ) {
-    let (mut transform, mut position) = query.iter_mut().next().unwrap();
+    let (_local_player, mut motion, mut use_action) = query.iter_mut()
+        .find(|(local_player, _, _)| local_player.num == 1)
+        .expect("No local player #1 found");
 
     // handle rotation
     if keyboard_input.pressed(KeyCode::KeyK) {
-        transform.rotate_z(-position.rotation_speed);
+        motion.rotation = motion.rotation_speed;
     } else if keyboard_input.pressed(KeyCode::KeyL) {
-        transform.rotate_z(position.rotation_speed);
+        motion.rotation = -motion.rotation_speed;
     }
 
     // handle thrust forward / backward
     if keyboard_input.pressed(KeyCode::KeyW) {
-        position.acceleration_vec.y = position.thrust_amount;
+        motion.acceleration_vec.y = motion.thrust_amount;
     } else if keyboard_input.pressed(KeyCode::KeyS) {
-        position.acceleration_vec.y = -position.thrust_amount;
+        motion.acceleration_vec.y = -motion.thrust_amount;
+    } else {
+        motion.acceleration_vec.y = 0.0;
     }
 
     // handle thrust left / right
     if keyboard_input.pressed(KeyCode::KeyA) {
-        position.acceleration_vec.x = -position.thrust_amount;
+        motion.acceleration_vec.x = -motion.thrust_amount;
     } else if keyboard_input.pressed(KeyCode::KeyD) {
-        position.acceleration_vec.x = position.thrust_amount;
+        motion.acceleration_vec.x = motion.thrust_amount;
+    } else {
+        motion.acceleration_vec.x = 0.0;
     }
 
     // handle deacceleration
     if keyboard_input.just_pressed(KeyCode::Space) {
         //todo: don't touch velocity and don't just stop
-        position.velocity = Vec2::ZERO;
-        position.acceleration_vec = Vec2::ZERO;
+        motion.velocity = Vec2::ZERO;
+        motion.acceleration_vec = Vec2::ZERO;
     }
 
     // handle rotation speed
     if keyboard_input.just_pressed(KeyCode::KeyU) {
-        position.rotation_speed = DEFAULT_ROTATION_SPEED;
+        motion.rotation_speed = DEFAULT_ROTATION_SPEED;
     } else if keyboard_input.just_pressed(KeyCode::KeyN) {
-        position.rotation_speed = DEFAULT_ROTATION_SPEED * 0.5;
+        motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.5;
     } else if keyboard_input.just_pressed(KeyCode::KeyM) {
-        position.rotation_speed = DEFAULT_ROTATION_SPEED * 0.25;
+        motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.25;
     }
 
     // handle thrust amount
     if keyboard_input.just_pressed(KeyCode::KeyF) {
-        position.thrust_amount = DEFAULT_ACCELERATION;
+        motion.thrust_amount = DEFAULT_ACCELERATION;
     } else if keyboard_input.just_pressed(KeyCode::KeyG) {
-        position.thrust_amount = DEFAULT_ACCELERATION * 0.5;
+        motion.thrust_amount = DEFAULT_ACCELERATION * 0.5;
     } else if keyboard_input.just_pressed(KeyCode::KeyV) {
-        position.thrust_amount = DEFAULT_ACCELERATION * 0.25;
+        motion.thrust_amount = DEFAULT_ACCELERATION * 0.25;
     }
 
+    use_action.reset();
+
+    // handle primary gear
+    if keyboard_input.pressed(KeyCode::KeyH) {
+        use_action.gear_use[0].1 = true;
+    }
+    // handle secondary gear
+    if keyboard_input.pressed(KeyCode::Quote) {
+        use_action.gear_use[1].1 = true;
+    }
 }
 
-pub fn gamepad_input(
+pub fn _gamepad_input(
     _button_inputs: Res<ButtonInput<GamepadButton>>,
     _button_axes: Res<Axis<GamepadButton>>,
     axes: Res<Axis<GamepadAxis>>,

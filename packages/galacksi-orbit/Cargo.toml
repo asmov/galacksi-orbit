@@ -12,9 +12,13 @@ categories = ["games"]
 [dependencies]
 bevy = "0.15"
 bevy-steamworks = { optional = true, version = "0", features = ["serde"] }
+clap = { optional = true, version = "4.5", features = ["derive"] }
 rand = "0"
 strum = { version = "0", features = ["derive"] }
 
 [features]
-default = []
+default = ["cli"]
+#default = []
+#default = ["cli", "steam"]
+cli = ["clap"]
 steam = ["bevy-steamworks"]

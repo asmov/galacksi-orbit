@@ -75,6 +75,16 @@ impl Palette {
             _ => unreachable!()
         }
     }
+
+    pub fn rand_bloom_not(not: Vec<Color>) -> Color {
+        loop {
+            let color = Self::rand_bloom();
+            if !not.contains(&color) {
+                return color;
+            }
+        }
+    }
+
     pub fn rand_button_text() -> Color {
         match rand::random::<u8>() % 8 {
             0 => palette::BLOOM_WHITE,
@@ -98,4 +108,3 @@ pub mod swatch {
     pub const MENU_BUTTON_BG_NORMAL: Color = palette::DARK_GRAY;
     pub const MENU_BUTTON_BG_HOVER: Color = palette::LESS_DARK_GRAY;
 }
-

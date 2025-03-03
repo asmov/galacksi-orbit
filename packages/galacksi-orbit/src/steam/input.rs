@@ -1,6 +1,6 @@
 use std::sync;
 use bevy::prelude::*;
-use bevy_steamworks as steam;
+use bevy_steamworks as steamworks;
 
 const ACTIONSET_GAME: &'static str = "Game";
 const ACTIONSET_MENU: &'static str = "Menu";
@@ -13,7 +13,7 @@ const ACTION_MENU_CANCEL: &'static str = "Menu_Cancel";
 const ACTION_GAME_MOVE: &'static str = "Move";
 const ACTION_GAME_AIM: &'static str = "Aim";
 
-type SteamHandle = std::os::raw::c_ulonglong;
+pub type SteamHandle = std::os::raw::c_ulonglong;
 
 pub struct MenuInputHandles {
     pub actionset: SteamHandle,
@@ -43,8 +43,8 @@ pub struct JoystickState {
 }
 
 impl ButtonState {
-    pub fn update(&mut self, steam: &Res<steam::Client>, controller_handle: SteamHandle, button_handle: SteamHandle) {
-        let input = steam.input();
+    pub fn update(&mut self, steamworks: &Res<steamworks::Client>, controller_handle: SteamHandle, button_handle: SteamHandle) {
+        let input = steamworks.input();
         let button = input.get_digital_action_data(controller_handle, button_handle);
 
         if button.bState {
@@ -64,7 +64,7 @@ pub struct ControllerInputCollection {
 }
 
 impl ControllerInputCollection {
-    pub fn update(&mut self, steam: &Res<steam::Client>) {
+    pub fn update(&mut self, steamworks: &Res<steamworks::Client>) {
         let input = steam.input();
         let connected_controller_handles = input.get_connected_controllers();
 
@@ -85,7 +85,7 @@ pub trait ControllerHandle {
 }
 
 pub trait InputUpdate {
-    fn update(&mut self, steam: &Res<steam::Client>);
+    fn update(&mut self, steam: &Res<steamworks::Client>);
 }
 
 pub enum ControllerInputType {
@@ -139,7 +139,7 @@ impl ControllerHandle for ControllerInput {
 }
 
 impl InputUpdate for ControllerInput {
-    fn update(&mut self, steam: &Res<steam::Client>) {
+    fn update(&mut self, steam: &Res<steamworks::Client>) {
         match self {
             Self::Connected(_) => {},
             Self::Disconnected(_) => {},
@@ -172,7 +172,7 @@ impl ControllerHandle for GameInput {
 }
 
 impl InputUpdate for GameInput {
-    fn update(&mut self, steam: &Res<steam::Client>) {
+    fn update(&mut self, steam: &Res<steamworks::Client>) {
         let input = steam.input();
         let movement = input.get_analog_action_data(self.controller, 0);
         let aim = input.get_analog_action_data(self.controller, 1);
@@ -195,7 +195,7 @@ impl MenuInput {
 }
 
 impl InputUpdate for MenuInput {
-    fn update(&mut self, steam: &Res<steam::Client>) {
+    fn update(&mut self, steam: &Res<steamworks::Client>) {
         let handles = menu_input_handles(&steam);
         self.up.update(steam, self.controller, handles.menu_up);
         self.down.update(steam, self.controller, handles.menu_down);
@@ -204,7 +204,7 @@ impl InputUpdate for MenuInput {
     }
 }
 
-pub(crate) fn menu_input_handles(steam: &Res<steam::Client>) -> &'static MenuInputHandles {
+pub(crate) fn menu_actionset_input_handles(steam: &Res<steamworks::Client>) -> &'static MenuInputHandles {
     static HANDLES: sync::OnceLock<MenuInputHandles> = sync::OnceLock::new();
     HANDLES.get_or_init(|| {
         let steam_input = steam.input();
@@ -233,7 +233,7 @@ pub(crate) fn menu_input_handles(steam: &Res<steam::Client>) -> &'static MenuInp
     })
 }
 
-pub(crate) fn game_input_handles(steam: &Res<steam::Client>) -> &'static GameInputHandles {
+pub(crate) fn game_actionset_input_handles(steam: &Res<steamworks::Client>) -> &'static GameInputHandles {
     static HANDLES: sync::OnceLock<GameInputHandles> = sync::OnceLock::new();
     HANDLES.get_or_init(|| {
         let steam_input = steam.input();
@@ -252,70 +252,4 @@ pub(crate) fn game_input_handles(steam: &Res<steam::Client>) -> &'static GameInp
             game_aim,
         }
     })
-}
-
-pub(crate) fn setup_menu_input(steam: Res<steam::Client>) {
-    let menu_input_handles = menu_input_handles(&steam);
-    steam.input()
-        .activate_action_set_handle(SteamHandle::MAX, menu_input_handles.actionset);
-}
-
-pub(crate) fn setup_game_input(steam: Res<steam::Client>) {
-    let game_input_handles = game_input_handles(&steam);
-    steam.input()
-        .activate_action_set_handle(SteamHandle::MAX, game_input_handles.actionset);
-}
-
-fn steam_input(
-    steam_client: Res<steam::Client>,
-    mut query: Query<&mut Position, With<Orb>>,
-    mut controller_inputs: ResMut<ControllerInputCollection>,
-) {
-    controller_inputs.update(&steam_client);
-
-    for controller_input in &mut controller_inputs.controller_inputs {
-        let ControllerInput::Game(_, input) = controller_input else {
-            if matches!(controller_input, ControllerInput::Connected{ .. }) {
-                controller_input.set_type(ControllerInputType::Game);
-            }
-
-            continue
-        };
-
-        let mut position = query.iter_mut().next().unwrap();
-/*
-        if input.movement.xy != Vec2::ZERO {
-            position.acceleration.
-        } else {
-            position.acceleration = Vec2::ZERO;
-        }
-        */
-
-
-            /*
-            if keyboard_input.pressed(KeyCode::KeyA) {
-                position.acceleration.x = -DEFAULT_ACCELERATION;
-            } else if keyboard_input.pressed(KeyCode::KeyD) {
-                position.acceleration.x = DEFAULT_ACCELERATION;
-            } else {
-                position.acceleration.x = 0.0;
-            }
-
-            if keyboard_input.pressed(KeyCode::KeyW) {
-                position.acceleration.y = DEFAULT_ACCELERATION;
-            } else if keyboard_input.pressed(KeyCode::KeyS) {
-                position.acceleration.y = -DEFAULT_ACCELERATION;
-            } else {
-                position.acceleration.y = 0.0;
-            }
-
-            if keyboard_input.pressed(KeyCode::KeyJ) {
-                position.rotation = Quat::from_rotation_z(DEFAULT_ROTATION_SPEED);
-            } else if keyboard_input.pressed(KeyCode::Semicolon) {
-                position.rotation = Quat::from_rotation_z(-DEFAULT_ROTATION_SPEED);
-            } else {
-                position.rotation = Quat::IDENTITY;
-            }
-            */
-    }
 }

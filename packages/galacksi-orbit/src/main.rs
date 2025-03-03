@@ -1,3 +1,3 @@
 fn main() {
-    galacksi_orbit::run_main();
+    galacksi_orbit::run();
 }

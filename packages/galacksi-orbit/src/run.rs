@@ -1,33 +1,33 @@
-use bevy::{prelude::*, core_pipeline::{bloom::Bloom, tonemapping::Tonemapping}};
-use crate::screen::{self, Screen};
+use bevy::prelude::*;
+use crate::plugin::OrbitPlugin;
 
-pub fn run_main() {
-    let mut app = App::new();
-    app
-        .add_plugins(DefaultPlugins)
-        .init_state::<Screen>()
-        .add_systems(Startup,  setup)
-        .add_plugins((
-            screen::title::title_plugin,
-            screen::game::game_plugin,
-        ));
+pub fn run() {
+    #[allow(unused_assignments)]
+    let mut app = None;
 
-    #[cfg(feature = "steam")] {
-        app = steam::init_steam_app(app);
+    #[cfg(feature = "cli")] {
+        app = Some(cli_app());
     }
 
-    app.run();
+    if app.is_none() {
+        app = Some(default_app());
+    };
+
+    app.expect("Expected app").run();
 }
 
-fn setup(mut commands: Commands) {
-    commands.spawn((
-        Camera2d,
-        Camera {
-            hdr: true, // bloom requires HDR
-            clear_color: ClearColorConfig::Custom(Color::BLACK),
-            ..default()
-        },
-        Tonemapping::TonyMcMapface,
-        Bloom::default(), // enable bloom for the camera
-    ));
+pub fn default_app() -> App {
+    let mut app = App::new();
+    app.add_plugins(OrbitPlugin::default());
+    app
+}
+
+#[cfg(feature = "cli")]
+pub fn cli_app() -> App {
+    use crate::cli::{Cli, Parser};
+
+    let cli = Cli::parse();
+    let mut app = App::new();
+    app.add_plugins(OrbitPlugin::from_cli(&cli));
+    app
 }
