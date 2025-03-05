@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use super::*;
-use crate::{util::*, color::*, model::*, Mode};
+use crate::{color::*, model::*, util::*, Mode};
 
 const MAX_VELOCITY_LENGTH: f32 = 500.;
 const BULLET_VELOCITY: f32 = 1000.;
@@ -15,7 +15,7 @@ pub fn plugin_game(app: &mut App) {
         ))
         .add_systems(Update, (
             system_update_game_input_keyboard_mouse,
-            update_camera
+            update_camera,
         ).run_if(in_state(Mode::Game)))
         .add_systems(FixedUpdate, (
             system_fixed_update_game_movement,
@@ -27,13 +27,14 @@ pub fn plugin_game(app: &mut App) {
 fn system_enter_game(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut color_materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    // spawn orbs for local players
     let p1_color = Palette::rand_bloom();
     let p2_color = Palette::rand_bloom_not(vec![p1_color]);
 
-    spawn_orb(Some(1), Some(p1_color), &mut commands, &mut meshes, &mut materials);
-    spawn_orb(Some(2), Some(p2_color), &mut commands, &mut meshes, &mut materials);
+    spawn_orb(Some(1), Some(p1_color), &mut commands, &mut meshes, &mut color_materials);
+    spawn_orb(Some(2), Some(p2_color), &mut commands, &mut meshes, &mut color_materials);
 }
 
 fn spawn_orb(
@@ -55,7 +56,7 @@ fn spawn_orb(
                     Orb,
                     Mesh2d(meshes.add(Circle::new(10.))),
                     MeshMaterial2d(materials.add(color)),
-                    Transform::from_translation(Vec3::ZERO),
+                    Transform::from_translation(Vec3::new(0.,0.,1.)),
                     LocalPlayer1,
                     LocalPlayer {
                         num: 1,
@@ -79,7 +80,7 @@ fn spawn_orb(
                     commands.spawn((
                         Mesh2d(meshes.add(Rectangle::new(30.,1.))),
                         MeshMaterial2d(materials.add(color)),
-                        Transform::from_translation(Vec3::ZERO),
+                        Transform::from_translation(Vec3::new(0.,0.,1.)),
                     ));
                 });
         },
@@ -155,12 +156,12 @@ fn system_fixed_update_game_movement(
     time: Res<Time>,
 ) {
 
-    for (mut position, mut last_position) in query.iter_mut() {
-        let pos = &mut *position;
-        last_position.position = pos.position;
-        pos.velocity = (pos.velocity + (pos.acceleration_vec * time.delta_secs()))
+    for (mut motion, mut last_position) in query.iter_mut() {
+        let motn = &mut *motion;
+        last_position.position = motn.position;
+        motn.velocity = (motn.velocity + (motn.acceleration_vec * time.delta_secs()))
             .clamp_length_max(MAX_VELOCITY_LENGTH);
-        pos.position += pos.velocity * time.delta_secs();
+        motn.position += motn.velocity * time.delta_secs();
     }
 }
 
@@ -173,7 +174,7 @@ fn system_fixed_update_game_actions(
 ) {
     let delta_secs = time.delta_secs();
     for (transform, motion, use_actions, mut equipment, mut last_use_actions) in query.iter_mut() {
-        let bullet_velocity = BULLET_VELOCITY.max(motion.velocity.length() + BULLET_VELOCITY);
+        let bullet_velocity = motion.velocity.length() + BULLET_VELOCITY;
         for gear_index in 0..MAX_GEAR {
             let gear_item = use_actions.gear_use[gear_index];
             let using = gear_item.1;
@@ -218,8 +219,8 @@ fn system_fixed_update_game_transform_movement(
             .lerp(motion.position, overstep)
             .extend(0.0);
 
-        transform.rotate_z(motion.rotation);
-        motion.rotation = 0.;
+        transform.rotate_z(motion.rotation_amount);
+        motion.rotation_amount = 0.;
     }
 }
 

@@ -5,9 +5,12 @@ pub mod consts;
 pub mod util;
 pub mod title;
 pub mod game;
+pub mod resource;
+pub mod config;
+pub mod console;
 mod run;
 
-pub use run::run;
+pub use {console::*, model::*, resource::*, config::*, run::run};
 
 #[cfg(feature = "steam")]
 pub mod steam;

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use crate::{model::*, consts::*};
+use bevy_console::ConsoleOpen;
+use crate::{*, consts::*};
 use super::*;
 
 /// Handles keyboard and mouse input for the game.
@@ -21,40 +22,61 @@ use super::*;
 pub fn system_update_game_input_keyboard_mouse(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     //mouse_input: Res<Input<MouseButton>>,
-    mut query: Query<(&LocalPlayer, &mut Motion, &mut UseActions),With<Orb>>
+    mut query: Query<(&LocalPlayer, &mut Motion, &Transform, &mut UseActions),With<Orb>>,
+    console_open: Res<ConsoleOpen>,
+    player_configs: Res<PlayerConfigs>
 ) {
-    let (_local_player, mut motion, mut use_action) = query.iter_mut()
-        .find(|(local_player, _, _)| local_player.num == 1)
+    if console_open.open {
+        return;
+    }
+
+    let (local_player, mut motion, _transform, mut use_action) = query.iter_mut()
+        .find(|(local_player, _, _, _)| local_player.num == 1)
         .expect("No local player #1 found");
+
+    let config = player_configs.for_num(local_player.num);
+    let cfg_orientation = config.keyboard.thrust_orientation;
 
     // handle rotation
     if keyboard_input.pressed(KeyCode::KeyK) {
-        motion.rotation = motion.rotation_speed;
+        motion.rotation_amount = motion.rotation_speed;
     } else if keyboard_input.pressed(KeyCode::KeyL) {
-        motion.rotation = -motion.rotation_speed;
+        motion.rotation_amount = -motion.rotation_speed;
     }
 
     // handle thrust forward / backward
     if keyboard_input.pressed(KeyCode::KeyW) {
-        motion.acceleration_vec.y = motion.thrust_amount;
+        match cfg_orientation {
+            ThrustOrientation::Absolute => motion.acceleration_vec.y = motion.thrust_amount,
+            ThrustOrientation::Relative => todo!("Implement relative thrust"),
+        }
     } else if keyboard_input.pressed(KeyCode::KeyS) {
-        motion.acceleration_vec.y = -motion.thrust_amount;
+        match cfg_orientation {
+            ThrustOrientation::Absolute => motion.acceleration_vec.y = -motion.thrust_amount,
+            ThrustOrientation::Relative => todo!("Implement relative thrust"),
+        }
     } else {
-        motion.acceleration_vec.y = 0.0;
+        motion.acceleration_vec.y = 0.;
     }
 
     // handle thrust left / right
     if keyboard_input.pressed(KeyCode::KeyA) {
-        motion.acceleration_vec.x = -motion.thrust_amount;
+        match cfg_orientation {
+            ThrustOrientation::Absolute => motion.acceleration_vec.x = -motion.thrust_amount,
+            ThrustOrientation::Relative => todo!("Implement relative thrust"),
+        }
     } else if keyboard_input.pressed(KeyCode::KeyD) {
-        motion.acceleration_vec.x = motion.thrust_amount;
+        match cfg_orientation {
+            ThrustOrientation::Absolute => motion.acceleration_vec.x = -motion.thrust_amount,
+            ThrustOrientation::Relative => todo!("Implement relative thrust"),
+        }
     } else {
         motion.acceleration_vec.x = 0.0;
     }
 
     // handle deacceleration
     if keyboard_input.just_pressed(KeyCode::Space) {
-        //todo: don't touch velocity and don't just stop
+        //todo: deaccelerate. don't touch velocity and don't just stop
         motion.velocity = Vec2::ZERO;
         motion.acceleration_vec = Vec2::ZERO;
     }
@@ -79,11 +101,11 @@ pub fn system_update_game_input_keyboard_mouse(
 
     use_action.reset();
 
-    // handle primary gear
-    if keyboard_input.pressed(KeyCode::KeyH) {
+    // handle primary
+    if keyboard_input.pressed(KeyCode::KeyJ) {
         use_action.gear_use[0].1 = true;
     }
-    // handle secondary gear
+    // handle secondary
     if keyboard_input.pressed(KeyCode::Quote) {
         use_action.gear_use[1].1 = true;
     }

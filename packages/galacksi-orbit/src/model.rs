@@ -1,5 +1,7 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 use crate::color::palette;
+
+pub type EquipmentID = u8;
 
 #[derive(Debug)]
 pub enum Energy {
@@ -22,6 +24,7 @@ impl Energy {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct EnergyDef {
     energy_type: Energy,
@@ -35,21 +38,6 @@ impl EnergyDef {
             color,
         }
     }
-}
-
-#[derive(Component, Default)]
-pub struct Orb;
-
-/// Gear is active usable equipment
-#[derive(Component, Default)]
-pub struct Gear {
-    pub items: [Option<EquipmentID>; 4] // total of 4 active slots
-}
-
-/// Installed equipment
-#[derive(Component, Default)]
-pub struct InstalledEquipment {
-    pub items: HashMap<EquipmentID, EquipmentItem>
 }
 
 pub struct EquipmentItem {
@@ -66,7 +54,7 @@ impl EquipmentItem {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Debug)]
 pub struct OrbBlueprint {
     pub id: u32,
     pub max_velocity: f32,
@@ -87,13 +75,10 @@ impl Default for OrbBlueprint {
     }
 }
 
-
 #[derive(strum::Display)]
 pub enum EquipmentCategory {
     Weapon
 }
-
-pub type EquipmentID = u8;
 
 pub struct Equipment {
     pub id: EquipmentID,

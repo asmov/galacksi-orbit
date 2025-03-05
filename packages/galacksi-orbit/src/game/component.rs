@@ -1,13 +1,28 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 use crate::{model::*, consts::*};
 
 pub const MAX_GEAR: usize = 4;
+
+#[derive(Component, Default)]
+pub struct Orb;
 
 #[derive(Component)]
 pub struct OnGameScreen;
 
 #[derive(Component)]
 pub struct OrbCursor;
+
+/// Gear is active usable equipment
+#[derive(Component, Default)]
+pub struct Gear {
+    pub items: [Option<EquipmentID>; 4] // total of 4 active slots
+}
+
+/// Installed equipment
+#[derive(Component, Default)]
+pub struct InstalledEquipment {
+    pub items: HashMap<EquipmentID, EquipmentItem>
+}
 
 #[derive(Component, Default)]
 pub struct UseActions {
@@ -47,7 +62,7 @@ pub struct LocalPlayer {
 #[derive(Component)]
 pub struct Motion {
     pub position: Vec2,
-    pub rotation: f32,
+    pub rotation_amount: f32,
     pub rotation_speed: f32,
     pub thrust_amount: f32,
     pub acceleration_vec: Vec2,
@@ -58,7 +73,7 @@ impl Default for Motion {
     fn default() -> Self {
         Self {
             position: Vec2::default(),
-            rotation: 0.,
+            rotation_amount: 0.,
             rotation_speed: DEFAULT_ROTATION_SPEED,
             thrust_amount: DEFAULT_ACCELERATION,
             acceleration_vec: Vec2::default(),
@@ -66,7 +81,6 @@ impl Default for Motion {
         }
     }
 }
-
 
 #[derive(Component, Default)]
 pub struct LastPosition {

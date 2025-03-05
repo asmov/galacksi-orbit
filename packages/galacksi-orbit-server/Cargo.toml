@@ -10,6 +10,3 @@ keywords = ["galacksi", "orbit", "multiplayer", "space", "shooter"]
 categories = ["games"]
 
 [dependencies]
-bevy = "0.14"
-rand = "0"
-strum = { version = "0", features = ["derive"] }
