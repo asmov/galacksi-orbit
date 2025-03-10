@@ -1,7 +1,7 @@
 use bevy::{
-    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
-    prelude::*
+    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping}, prelude::*
 };
+use bevy_console::{ConsoleSet, PrintConsoleLine};
 use bevy_tiling_background::{BackgroundImageBundle, BackgroundMaterial, SetImageRepeatingExt, TilingBackgroundPlugin};
 use crate::*;
 
@@ -35,17 +35,17 @@ impl Plugin for OrbitPlugin {
                 title::plugin_title,
                 game::plugin_game,
                 #[cfg(feature = "steam")] steam::plugin_steam,
-            ));
+            ))
+            .add_systems(Startup, system_startup_greet_console.after(ConsoleSet::ConsoleUI));
     }
 }
 
 fn system_startup(
     mut commands: Commands,
     mut materials: ResMut<Assets<BackgroundMaterial>>,
-    asset_server: Res<AssetServer>)
+    asset_server: Res<AssetServer>,
+)
 {
-    //let image_handle = asset_server.load("bg-stars.png");
-    //commands.set_image_repeating(image_handle);
     let image_handle = asset_server.load("bg-stars.png");
     commands.set_image_repeating(image_handle.clone());
 
@@ -65,4 +65,12 @@ fn system_startup(
             .with_movement_scale(0.3)
             .at_z_layer(0.1),
     );
+}
+
+fn system_startup_greet_console(mut console_line: EventWriter<PrintConsoleLine>) {
+    let text = format!("Welcome to {galacksi_orbit}\nUse {help} for more information\n\n",
+        galacksi_orbit = ansi_term::Color::Green.paint("Galacksi Orbit"),
+        help = ansi_term::Color::Yellow.paint("help")
+    );
+    console_line.send(PrintConsoleLine::new(text));
 }

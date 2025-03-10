@@ -10,10 +10,11 @@ keywords = ["galacksi", "orbit", "multiplayer", "space", "shooter"]
 categories = ["games"]
 
 [dependencies]
+ansi_term = "0.12.1"
 bevy = { version="0.15", default-features = false, features = [
-  "android-game-activity",
-  "android-game-activity",
-  "android_shared_stdcxx",
+  #"android-game-activity",
+  #"android-game-activity",
+  #"android_shared_stdcxx",
   "animation",
   "bevy_asset",
   "bevy_audio",
@@ -21,9 +22,9 @@ bevy = { version="0.15", default-features = false, features = [
   "bevy_core_pipeline",
   "bevy_gilrs",
   "bevy_gizmos",
-  #"bevy_gltf",
+  #"bevy_gltf", FAILS w/bevy_tiling_background
   "bevy_mesh_picking_backend",
-  #"bevy_pbr",
+  #"bevy_pbr", FAILS w/bevy_tiling_background
   "bevy_picking",
   "bevy_render",
   "bevy_scene",
@@ -49,8 +50,9 @@ bevy = { version="0.15", default-features = false, features = [
   "wayland"
 ]}
 bevy-steamworks = { optional = true, version = "0", features = ["serde"] }
-bevy_console = "0.13.1"
-bevy_egui = "0.31"
+#bevy_console = "0.13.1"
+bevy_console = {path = "../../../../bevy-console" }
+bevy_egui = "0.31" # bump with bevy_console
 bevy_tiling_background = "0.12.0"
 clap = { version = "4.5", features = ["derive"] }
 rand = "0.8"

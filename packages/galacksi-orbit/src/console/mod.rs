@@ -1,7 +1,9 @@
-mod console;
+mod command;
 mod plugin;
+//mod log;
 
 pub use self::{
     plugin::*,
-    console::*
+    command::*,
+    //log::*
 };

@@ -47,16 +47,15 @@ impl UseActions {
 #[derive(Component, Default)]
 pub struct OrbBullet;
 
-pub const LOCAL_PLAYER_1: u8 = 1;
+pub const LOCAL_PLAYER_1: usize = 1;
 
 #[derive(Component, Default)]
 pub struct LocalPlayer1;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct LocalPlayer {
-    pub num: u8,
+    pub num: usize,
     pub gamepad_id: Option<usize>,
-    pub orb_id: Option<u16>
 }
 
 #[derive(Component)]

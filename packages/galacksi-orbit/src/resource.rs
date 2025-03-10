@@ -15,8 +15,8 @@ impl Default for PlayerConfigs {
 }
 
 impl PlayerConfigs {
-    pub fn for_num(&self, num: u8) -> &PlayerConfig {
-        self.configs.get(num as usize - 1)
+    pub fn for_num(&self, num: usize) -> &PlayerConfig {
+        self.configs.get(num)
             .expect("PlayerConfig not initialized for num: {num}")
     }
 }

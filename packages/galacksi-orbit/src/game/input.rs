@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_console::ConsoleOpen;
-use crate::{*, consts::*};
+use crate::{*, consts::*, config::ThrustOrientation::*};
 use super::*;
 
 /// Handles keyboard and mouse input for the game.
@@ -30,8 +30,8 @@ pub fn system_update_game_input_keyboard_mouse(
         return;
     }
 
-    let (local_player, mut motion, _transform, mut use_action) = query.iter_mut()
-        .find(|(local_player, _, _, _)| local_player.num == 1)
+    let (local_player, mut motion, transform, mut use_action) = query.iter_mut()
+        .find(|(local_player, _, _, _)| local_player.num == 0)
         .expect("No local player #1 found");
 
     let config = player_configs.for_num(local_player.num);
@@ -44,34 +44,51 @@ pub fn system_update_game_input_keyboard_mouse(
         motion.rotation_amount = -motion.rotation_speed;
     }
 
-    // handle thrust forward / backward
-    if keyboard_input.pressed(KeyCode::KeyW) {
-        match cfg_orientation {
-            ThrustOrientation::Absolute => motion.acceleration_vec.y = motion.thrust_amount,
-            ThrustOrientation::Relative => todo!("Implement relative thrust"),
-        }
-    } else if keyboard_input.pressed(KeyCode::KeyS) {
-        match cfg_orientation {
-            ThrustOrientation::Absolute => motion.acceleration_vec.y = -motion.thrust_amount,
-            ThrustOrientation::Relative => todo!("Implement relative thrust"),
-        }
-    } else {
-        motion.acceleration_vec.y = 0.;
-    }
+    match cfg_orientation {
+        Absolute => {
+            // handle thrust forward / backward
+            if keyboard_input.pressed(KeyCode::KeyW) {
+                motion.acceleration_vec.y = motion.thrust_amount;
+            } else if keyboard_input.pressed(KeyCode::KeyS) {
+                motion.acceleration_vec.y = -motion.thrust_amount;
+            } else {
+                motion.acceleration_vec.y = 0.;
+            }
 
-    // handle thrust left / right
-    if keyboard_input.pressed(KeyCode::KeyA) {
-        match cfg_orientation {
-            ThrustOrientation::Absolute => motion.acceleration_vec.x = -motion.thrust_amount,
-            ThrustOrientation::Relative => todo!("Implement relative thrust"),
+            // handle thrust left / right
+            if keyboard_input.pressed(KeyCode::KeyA) {
+                motion.acceleration_vec.x = motion.thrust_amount;
+            } else if keyboard_input.pressed(KeyCode::KeyD) {
+                motion.acceleration_vec.x = -motion.thrust_amount;
+            } else {
+                motion.acceleration_vec.x = 0.;
+            }
+        },
+        Relative => {
+            let mut accelerated = false;
+
+            // handle thrust forward / backward
+            if keyboard_input.pressed(KeyCode::KeyW) {
+                motion.acceleration_vec = (transform.rotation * Vec3::Y * motion.thrust_amount).truncate();
+                accelerated = true;
+            } else if keyboard_input.pressed(KeyCode::KeyS) {
+                motion.acceleration_vec = (transform.rotation * Vec3::Y * -motion.thrust_amount).truncate();
+                accelerated = true;
+            }
+
+            // handle thrust left / right
+            if keyboard_input.pressed(KeyCode::KeyA) {
+                motion.acceleration_vec = (transform.rotation * Vec3::X * -motion.thrust_amount).truncate();
+                accelerated = true;
+            } else if keyboard_input.pressed(KeyCode::KeyD) {
+                motion.acceleration_vec = (transform.rotation * Vec3::X * motion.thrust_amount).truncate();
+                accelerated = true;
+            }
+
+            if !accelerated {
+                motion.acceleration_vec = Vec2::ZERO;
+            }
         }
-    } else if keyboard_input.pressed(KeyCode::KeyD) {
-        match cfg_orientation {
-            ThrustOrientation::Absolute => motion.acceleration_vec.x = -motion.thrust_amount,
-            ThrustOrientation::Relative => todo!("Implement relative thrust"),
-        }
-    } else {
-        motion.acceleration_vec.x = 0.0;
     }
 
     // handle deacceleration

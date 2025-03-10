@@ -10,7 +10,7 @@ pub mod config;
 pub mod console;
 mod run;
 
-pub use {console::*, model::*, resource::*, config::*, run::run};
+pub use {console::*, model::*, resource::*, config::*, color::*, util::*, run::run};
 
 #[cfg(feature = "steam")]
 pub mod steam;
@@ -23,4 +23,10 @@ pub enum Mode {
     #[default]
     Title,
     Game
+}
+
+impl Mode {
+    pub fn is_game(&self) -> bool {
+        *self == Mode::Game
+    }
 }
