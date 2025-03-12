@@ -22,7 +22,7 @@ impl OrbSpawner {
             transform: Some(Transform::from_xyz(0., 0., 1.)),
             color: None,
             local_player: Some(LocalPlayer {
-                num: 1,
+                num: 0,
                 gamepad_id: None
             }),
         }
