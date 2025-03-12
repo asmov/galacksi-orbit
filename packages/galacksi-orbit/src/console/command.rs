@@ -99,7 +99,7 @@ pub fn teleport_cmd(
 
     match cmd.what {
         What::Me => {
-            let player = local_players.iter_mut().find(|(lp, _)| lp.num == 1);
+            let player = local_players.iter_mut().find(|(lp, _)| lp.num == 0);
             if let Some((_, mut motion)) = player {
                 motion.position = Vec2::new(cmd.x as f32, cmd.y as f32);
                 motion.velocity = Vec2::ZERO;

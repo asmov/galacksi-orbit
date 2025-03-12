@@ -2,6 +2,9 @@ use bevy::prelude::*;
 use crate::*;
 use super::*;
 
+pub const MAX_ORB_SPEED: f32 = 500.;
+pub const BULLET_SPEED: f32 = 1000.;
+
 pub struct OrbSpawner {
     pub transform: Option<Transform>,
     pub color: Option<Color>,
@@ -101,21 +104,11 @@ impl OrbSpawner {
             transform,
             Motion {
                 position,
+                max_speed: Some(MAX_ORB_SPEED),
                 ..default()
             },
-            LastPosition {
-                position,
-                ..default()
-            },
-            UseActions::default(),
-            LastUseActions::default(),
-            InstalledEquipment {
-                items: [(0, EquipmentItem::new(0))]
-                    .into_iter().collect()
-            },
-            Gear {
-            items: [Some(0), None, None, None]
-            },
+            LastPosition(position),
+            EquipmentInventory([(0, InstalledEquipment::new_mounted(0, 0))].into_iter().collect()),
             OnGameScreen
         ));
 
@@ -129,9 +122,9 @@ impl OrbSpawner {
 
         orb.with_children(|commands| {
             commands.spawn((
-                Mesh2d(meshes.add(Rectangle::new(30.,1.))),
-                MeshMaterial2d(materials.add(color)),
-                Transform::from_translation(Vec3::new(0.,0.,1.)),
+                Mesh2d(meshes.add(Rectangle::new(1.,1000.))),
+                MeshMaterial2d(materials.add(palette::DARK_GRAY)),
+                Transform::from_translation(Vec3::new(0.0, 1000./2. + 20., -0.1)),
             ));
         });
 
@@ -142,7 +135,7 @@ impl OrbSpawner {
 #[derive(Default)]
 pub struct BulletSpawner {
     pub transform: Option<Transform>,
-    pub speed: Option<f32>,
+    pub motion: Option<Motion>,
     pub color: Option<Color>,
 }
 
@@ -151,14 +144,26 @@ impl BulletSpawner {
         Self::default()
     }
 
-    pub fn from_orb(motion: &Motion, transform: &Transform) -> Self {
-        let speed = motion.velocity.length() + BULLET_SPEED;
-        let mut transform = transform.clone();
-        transform.translation = motion.position.extend(1.);
+    pub fn from_orb(orb_motion: &Motion, orb_transform: &Transform) -> Self {
+        let speed = orb_motion.velocity.length() + BULLET_SPEED;
+        let angle = orb_transform.rotation * Vec3::Y;
+        //let acceleration = orb_motion.acceleration_vec * time.delta_secs();
+        let position = orb_motion.position.extend(1.) + angle * 40.;
+
+        let motion = Motion {
+            position: position.truncate(),
+            velocity: ((angle * speed).truncate() + orb_motion.velocity),
+            ..default()
+        };
+
+        let transform = Transform {
+            translation: position,
+            ..*orb_transform
+        };
 
         Self {
             transform: Some(transform),
-            speed: Some(speed),
+            motion: Some(motion),
             color: None,
         }
     }
@@ -168,8 +173,8 @@ impl BulletSpawner {
         self
     }
 
-    pub fn speed(mut self, speed: f32) -> Self {
-        self.speed = Some(speed);
+    pub fn motion(mut self, motion: Motion) -> Self {
+        self.motion = Some(motion);
         self
     }
 
@@ -185,8 +190,8 @@ impl BulletSpawner {
     fn validate_fill(&mut self) -> Result<(), &'static str> {
         if self.transform.is_none() {
             return Err("Transform is not set")
-        } else if self.speed.is_none() {
-            return Err("Velocity is not set")
+        } else if self.motion.is_none() {
+            return Err("Motion is not set")
         } else if self.color.is_none() {
             self.color = Some(Self::default_color());
         }
@@ -204,25 +209,15 @@ impl BulletSpawner {
 
         let color = self.color.unwrap();
         let transform = self.transform.unwrap();
-        let speed = self.speed.unwrap();
-
-        let velocity = (transform.rotation * Vec3::Y * speed).truncate();
-        let position = transform.translation.truncate();
+        let motion = self.motion.as_ref().unwrap();
 
         commands.spawn((
             OrbBullet,
             Mesh2d(meshes.add(Circle::new(1.))),
             MeshMaterial2d(materials.add(color)),
             transform,
-            Motion {
-                position,
-                velocity,
-                ..default()
-            },
-            LastPosition {
-                position,
-                ..default()
-            },
+            motion.clone(),
+            LastPosition(motion.position),
             OnGameScreen
         ));
 

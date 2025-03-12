@@ -22,7 +22,7 @@ use super::*;
 pub fn system_update_game_input_keyboard_mouse(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     //mouse_input: Res<Input<MouseButton>>,
-    mut query: Query<(&LocalPlayer, &mut Motion, &Transform, &mut UseActions),With<Orb>>,
+    mut query: Query<(&LocalPlayer, &mut Motion, &Transform, &mut EquipmentInventory),With<Orb>>,
     console_open: Res<ConsoleOpen>,
     player_configs: Res<PlayerConfigs>
 ) {
@@ -30,7 +30,7 @@ pub fn system_update_game_input_keyboard_mouse(
         return;
     }
 
-    let (local_player, mut motion, transform, mut use_action) = query.iter_mut()
+    let (local_player, mut motion, transform, mut equipment_inventory) = query.iter_mut()
         .find(|(local_player, _, _, _)| local_player.num == 0)
         .expect("No local player #1 found");
 
@@ -116,15 +116,19 @@ pub fn system_update_game_input_keyboard_mouse(
         motion.thrust_amount = DEFAULT_ACCELERATION * 0.25;
     }
 
-    use_action.reset();
+    equipment_inventory.reset_use();
 
     // handle primary
     if keyboard_input.pressed(KeyCode::KeyJ) {
-        use_action.gear_use[0].1 = true;
+        if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(0) {
+            equipment_installation.using = true;
+        }
     }
     // handle secondary
     if keyboard_input.pressed(KeyCode::Quote) {
-        use_action.gear_use[1].1 = true;
+        if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(1) {
+            equipment_installation.using = true;
+        }
     }
 }
 

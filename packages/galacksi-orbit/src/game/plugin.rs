@@ -14,11 +14,15 @@ pub fn plugin_game(app: &mut App) {
             system_update_game_input_keyboard_mouse,
             update_camera,
         ).run_if(in_state(Mode::Game)))
-        .add_systems(FixedUpdate, (
-            system_fixed_update_game_movement,
-            system_fixed_update_game_actions,
-            system_fixed_update_game_transform_movement,
-        ).run_if(in_state(Mode::Game)));
+        .add_systems(FixedUpdate,
+            (
+                system_fixed_update_game_equipment,
+                system_fixed_update_game_movement,
+                system_fixed_update_game_transform_movement
+            )
+                .chain()
+                .run_if(in_state(Mode::Game))
+        );
 }
 
 fn system_enter_game(

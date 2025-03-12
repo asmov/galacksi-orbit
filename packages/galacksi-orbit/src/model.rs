@@ -1,7 +1,4 @@
 use bevy::prelude::*;
-use crate::color::palette;
-
-pub type EquipmentID = u8;
 
 #[derive(Debug)]
 pub enum Energy {
@@ -40,27 +37,12 @@ impl EnergyDef {
     }
 }
 
-pub struct EquipmentItem {
-    pub id: EquipmentID,
-    pub cooldown_remaining: f32
-}
-
-impl EquipmentItem {
-    pub fn new(id: EquipmentID) -> Self {
-        Self {
-            id,
-            cooldown_remaining: 0.0,
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct OrbBlueprint {
     pub id: u32,
     pub max_velocity: f32,
     pub max_health: u16,
     pub max_shield: u16,
-    pub color: Color,
 }
 
 impl Default for OrbBlueprint {
@@ -70,7 +52,6 @@ impl Default for OrbBlueprint {
             max_velocity: 0.0,
             max_health: 0,
             max_shield: 0,
-            color: palette::BLOOM_WHITE,
         }
     }
 }
@@ -81,7 +62,7 @@ pub enum EquipmentCategory {
 }
 
 pub struct Equipment {
-    pub id: EquipmentID,
+    pub id: usize,
     pub category: EquipmentCategory,
     pub name: &'static str,
     pub token: &'static str,
@@ -89,7 +70,7 @@ pub struct Equipment {
     pub cooldown: f32
 }
 
-pub const EQUIPMENT: &'static [Equipment;1] = &[
+pub const EQUIPMENT: [Equipment;1] = [
     Equipment {
         id: 0,
         category: EquipmentCategory::Weapon,

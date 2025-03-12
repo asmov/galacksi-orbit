@@ -1,7 +1,7 @@
 [package]
 name = "galacksi-orbit"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 description = "Multiplayer space shooter based in the Galacksi universe"
 authors = ["Asmov LLC <development.pub@asmov.software>"]
 repository = "https://github.com/asmov/galacks-orbit"
@@ -50,10 +50,10 @@ bevy = { version="0.15", default-features = false, features = [
   "wayland"
 ]}
 bevy-steamworks = { optional = true, version = "0", features = ["serde"] }
-#bevy_console = "0.13.1"
-bevy_console = {path = "../../../../bevy-console" }
+#bevy_console = "0.13"
+bevy_console = { git="https://github.com/RichoDemus/bevy-console.git" }
 bevy_egui = "0.31" # bump with bevy_console
-bevy_tiling_background = "0.12.0"
+bevy_tiling_background = "0.12"
 clap = { version = "4.5", features = ["derive"] }
 rand = "0.8"
 strum = { version = "0", features = ["derive"] }

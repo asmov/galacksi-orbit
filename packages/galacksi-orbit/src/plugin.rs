@@ -19,7 +19,16 @@ impl OrbitPlugin {
 impl Plugin for OrbitPlugin {
     fn build(&self, app: &mut App) {
         let default_plugins = DefaultPlugins.build()
-            .set(ImagePlugin::default_linear());
+            .set(ImagePlugin::default_linear())
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Galacksi Orbit".into(),
+                    name: Some("orbit.galacksi.app".into()),
+                    ..default()
+                }),
+                ..default()
+            });
+
         let default_plugins = console::build_default_plugins(default_plugins);
 
         app

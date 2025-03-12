@@ -1,7 +1,7 @@
 use bevy::{prelude::*, utils::HashMap};
-use crate::{model::*, consts::*};
+use crate::consts::*;
 
-pub const MAX_GEAR: usize = 4;
+pub const MAX_MOUNTED_EQUIPMENT: usize = 4;
 
 #[derive(Component, Default)]
 pub struct Orb;
@@ -12,34 +12,42 @@ pub struct OnGameScreen;
 #[derive(Component)]
 pub struct OrbCursor;
 
-/// Gear is active usable equipment
-#[derive(Component, Default)]
-pub struct Gear {
-    pub items: [Option<EquipmentID>; 4] // total of 4 active slots
-}
-
 /// Installed equipment
-#[derive(Component, Default)]
+#[derive(Component, Default, Deref, DerefMut)]
+pub struct EquipmentInventory(pub HashMap<usize, InstalledEquipment>);
+
+impl EquipmentInventory {
+    pub fn mounted_at(&self, index: usize) -> Option<&InstalledEquipment> {
+        self.iter().find(|(_, equipment)| equipment.mounted_at == Some(index))
+            .map(|(_, equipment)| equipment)
+    }
+
+    pub fn mounted_at_mut(&mut self, index: usize) -> Option<&mut InstalledEquipment> {
+        self.iter_mut().find(|(_, equipment)| equipment.mounted_at == Some(index))
+            .map(|(_, equipment)| equipment)
+    }
+
+    pub fn reset_use(&mut self) {
+        for (_, equipment) in self.iter_mut() {
+            equipment.using = false;
+        }
+    }
+}
+
+#[derive(Default)]
 pub struct InstalledEquipment {
-    pub items: HashMap<EquipmentID, EquipmentItem>
+    pub id: usize,
+    pub using: bool,
+    pub mounted_at: Option<usize>,
+    pub last_used: f32,
 }
 
-#[derive(Component, Default)]
-pub struct UseActions {
-    pub gear_use: GearUse
-}
-
-#[derive(Component, Default)]
-pub struct LastUseActions {
-    pub gear_use: GearUse
-}
-
-pub type GearUse = [(EquipmentID, bool); MAX_GEAR];
-
-impl UseActions {
-    pub fn reset(&mut self) {
-        for i in 0..MAX_GEAR {
-            self.gear_use[i].1 = false;
+impl InstalledEquipment {
+    pub fn new_mounted(id: usize, mounted_at: usize) -> Self {
+        Self {
+            id,
+            mounted_at: Some(mounted_at),
+            ..default()
         }
     }
 }
@@ -58,7 +66,10 @@ pub struct LocalPlayer {
     pub gamepad_id: Option<usize>,
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
+pub struct SpawnMotion;
+
+#[derive(Component, Clone)]
 pub struct Motion {
     pub position: Vec2,
     pub rotation_amount: f32,
@@ -66,6 +77,7 @@ pub struct Motion {
     pub thrust_amount: f32,
     pub acceleration_vec: Vec2,
     pub velocity: Vec2,
+    pub max_speed: Option<f32>
 }
 
 impl Default for Motion {
@@ -77,11 +89,10 @@ impl Default for Motion {
             thrust_amount: DEFAULT_ACCELERATION,
             acceleration_vec: Vec2::default(),
             velocity: Vec2::default(),
+            max_speed: None
         }
     }
 }
 
-#[derive(Component, Default)]
-pub struct LastPosition {
-    pub position: Vec2
-}
+#[derive(Component, Default, Deref, DerefMut)]
+pub struct LastPosition(pub Vec2);
