@@ -147,7 +147,6 @@ impl BulletSpawner {
     pub fn from_orb(orb_motion: &Motion, orb_transform: &Transform) -> Self {
         let speed = orb_motion.velocity.length() + BULLET_SPEED;
         let angle = orb_transform.rotation * Vec3::Y;
-        //let acceleration = orb_motion.acceleration_vec * time.delta_secs();
         let position = orb_motion.position.extend(1.) + angle * 40.;
 
         let motion = Motion {

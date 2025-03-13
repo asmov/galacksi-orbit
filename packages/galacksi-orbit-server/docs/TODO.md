@@ -1,10 +1,7 @@
-TODO: Galacksi Orbit
+TODO: Galacksi Orbit Server
 ========================================================================================================================
 
 See the repository [TODO.md](../../docs/TODO.md) for a roadmap.
 
 NOW
 ------------------------------------------------------------------------------------------------------------------------
-- mouse rotation
-- mouse fire primary/secondary
-- gamepad input
