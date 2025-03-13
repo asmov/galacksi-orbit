@@ -21,7 +21,7 @@ use super::*;
 ///
 pub fn system_update_game_input_keyboard_mouse(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    //mouse_input: Res<Input<MouseButton>>,
+    mouse_input: Res<ButtonInput<MouseButton>>,
     mut query: Query<(&LocalPlayer, &mut Motion, &Transform, &mut EquipmentInventory),With<Orb>>,
     console_open: Res<ConsoleOpen>,
     player_configs: Res<PlayerConfigs>
@@ -116,19 +116,16 @@ pub fn system_update_game_input_keyboard_mouse(
         motion.thrust_amount = DEFAULT_ACCELERATION * 0.25;
     }
 
-    equipment_inventory.reset_use();
-
     // handle primary
-    if keyboard_input.pressed(KeyCode::KeyJ) {
-        if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(0) {
-            equipment_installation.using = true;
-        }
+    if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(0) {
+        equipment_installation.using =
+            keyboard_input.pressed(KeyCode::KeyJ) || mouse_input.pressed(MouseButton::Left);
     }
+
     // handle secondary
-    if keyboard_input.pressed(KeyCode::Quote) {
-        if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(1) {
-            equipment_installation.using = true;
-        }
+    if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(1) {
+        equipment_installation.using =
+            keyboard_input.pressed(KeyCode::Quote) || mouse_input.pressed(MouseButton::Right);
     }
 }
 

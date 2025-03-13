@@ -4,7 +4,7 @@ Galacksi Orbit
 
 Standalone Installation
 ------------------------------------------------------------------------------------------------------------------------
-*None of this is necessary if you've purchsed using Steam, Windows Store, or Apple Store.*
+*None of this is necessary if you've purchsed using Steam, Microsoft Store, or Apple Store.*
 1. Install [Rust](https://rustup.rs)
 2. Install Git
    - Windows
