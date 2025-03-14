@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use consts::DEFAULT_ROTATION_SPEED;
 use crate::*;
 use super::*;
 
@@ -59,7 +60,10 @@ pub fn system_fixed_update_game_transform_movement(
             .lerp(motion.position, overstep)
             .extend(1.);
 
-        transform.rotate_z(motion.rotation_amount);
-        motion.rotation_amount = 0.;
+        if motion.rotation_amount != 0. {
+            let rotation_amount = motion.rotation_amount.clamp(-DEFAULT_ROTATION_SPEED, DEFAULT_ROTATION_SPEED);
+            transform.rotate_z(rotation_amount);
+            motion.rotation_amount -= rotation_amount;
+        }
     }
 }

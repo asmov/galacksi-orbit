@@ -1,8 +1,6 @@
-use bevy::{
-    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping}, prelude::*
-};
-use bevy_console::{ConsoleSet, PrintConsoleLine};
-use bevy_tiling_background::{BackgroundImageBundle, BackgroundMaterial, SetImageRepeatingExt, TilingBackgroundPlugin};
+use bevy::prelude::*;
+use bevy_console::ConsoleSet;
+use bevy_tiling_background::{BackgroundMaterial, TilingBackgroundPlugin};
 use crate::*;
 
 #[derive(Default)]
@@ -37,8 +35,10 @@ impl Plugin for OrbitPlugin {
                 TilingBackgroundPlugin::<BackgroundMaterial>::default(),
             ))
             .insert_state::<Mode>(self.mode)
+            .init_resource::<MousePosition>()
             .init_resource::<PlayerConfigs>()
             .add_systems(Startup, system_startup)
+            .add_systems(Update, system_update_mouse_world_position)
             .add_plugins((
                 console::plugin_console,
                 title::plugin_title,
@@ -47,39 +47,4 @@ impl Plugin for OrbitPlugin {
             ))
             .add_systems(Startup, system_startup_greet_console.after(ConsoleSet::ConsoleUI));
     }
-}
-
-fn system_startup(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<BackgroundMaterial>>,
-    asset_server: Res<AssetServer>,
-)
-{
-    let image_handle = asset_server.load("bg-stars.png");
-    commands.set_image_repeating(image_handle.clone());
-
-    commands.spawn((
-        Camera2d,
-        Camera {
-            hdr: true, // bloom requires HDR
-            clear_color: ClearColorConfig::Custom(Color::BLACK),
-            ..default()
-        },
-        Tonemapping::TonyMcMapface,
-        Bloom::default(), // enable bloom for the camera
-    ));
-
-    commands.spawn(
-        BackgroundImageBundle::from_image(image_handle, materials.as_mut())
-            .with_movement_scale(0.3)
-            .at_z_layer(0.1),
-    );
-}
-
-fn system_startup_greet_console(mut console_line: EventWriter<PrintConsoleLine>) {
-    let text = format!("Welcome to {galacksi_orbit}\nUse {help} for more information\n\n",
-        galacksi_orbit = ansi_term::Color::Green.paint("Galacksi Orbit"),
-        help = ansi_term::Color::Yellow.paint("help")
-    );
-    console_line.send(PrintConsoleLine::new(text));
 }

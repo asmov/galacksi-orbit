@@ -8,9 +8,11 @@ pub mod game;
 pub mod resource;
 pub mod config;
 pub mod console;
+pub mod component;
+pub mod system;
 mod run;
 
-pub use {console::*, model::*, resource::*, config::*, color::*, util::*, run::run};
+pub use {console::*, model::*, resource::*, config::*, color::*, util::*, system::*, run::run};
 
 #[cfg(feature = "steam")]
 pub mod steam;

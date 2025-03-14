@@ -4,6 +4,7 @@ use super::*;
 
 pub fn plugin_game(app: &mut App) {
     app
+        .init_resource::<LastMouseGamePosition>()
         .add_systems(OnEnter(Mode::Game), (
             system_enter_game,
         ))

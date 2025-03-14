@@ -20,9 +20,11 @@ use super::*;
 /// M sets rotation speed to 25%
 ///
 pub fn system_update_game_input_keyboard_mouse(
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    mouse_input: Res<ButtonInput<MouseButton>>,
-    mut query: Query<(&LocalPlayer, &mut Motion, &Transform, &mut EquipmentInventory),With<Orb>>,
+    mut query: Query<(&LocalPlayer, &mut Motion, &mut Transform, &mut EquipmentInventory),With<Orb>>,
+    keyboard_button: Res<ButtonInput<KeyCode>>,
+    mouse_button: Res<ButtonInput<MouseButton>>,
+    mouse_position: Res<MousePosition>,
+    mut last_mouse_position: ResMut<LastMouseGamePosition>,
     console_open: Res<ConsoleOpen>,
     player_configs: Res<PlayerConfigs>
 ) {
@@ -30,7 +32,7 @@ pub fn system_update_game_input_keyboard_mouse(
         return;
     }
 
-    let (local_player, mut motion, transform, mut equipment_inventory) = query.iter_mut()
+    let (local_player, mut motion, mut transform, mut equipment_inventory) = query.iter_mut()
         .find(|(local_player, _, _, _)| local_player.num == 0)
         .expect("No local player #1 found");
 
@@ -38,27 +40,36 @@ pub fn system_update_game_input_keyboard_mouse(
     let cfg_orientation = config.keyboard.thrust_orientation;
 
     // handle rotation
-    if keyboard_input.pressed(KeyCode::KeyK) {
+    if keyboard_button.pressed(KeyCode::KeyK) {
         motion.rotation_amount = motion.rotation_speed;
-    } else if keyboard_input.pressed(KeyCode::KeyL) {
+    } else if keyboard_button.pressed(KeyCode::KeyL) {
         motion.rotation_amount = -motion.rotation_speed;
+    } else if let Some(mouse_cursor) = mouse_position.position {
+        if last_mouse_position.window_position.is_none() || last_mouse_position.window_position != mouse_position.window_position {
+            let dir = transform.local_y().truncate();
+            let cursor_dir = mouse_cursor - transform.translation.truncate();
+            let angle = dir.angle_to(cursor_dir);
+            motion.rotation_amount = angle;
+
+            dbg!(angle, mouse_cursor, motion.position);
+        }
     }
 
     match cfg_orientation {
         Absolute => {
             // handle thrust forward / backward
-            if keyboard_input.pressed(KeyCode::KeyW) {
+            if keyboard_button.pressed(KeyCode::KeyW) {
                 motion.acceleration_vec.y = motion.thrust_amount;
-            } else if keyboard_input.pressed(KeyCode::KeyS) {
+            } else if keyboard_button.pressed(KeyCode::KeyS) {
                 motion.acceleration_vec.y = -motion.thrust_amount;
             } else {
                 motion.acceleration_vec.y = 0.;
             }
 
             // handle thrust left / right
-            if keyboard_input.pressed(KeyCode::KeyA) {
+            if keyboard_button.pressed(KeyCode::KeyA) {
                 motion.acceleration_vec.x = motion.thrust_amount;
-            } else if keyboard_input.pressed(KeyCode::KeyD) {
+            } else if keyboard_button.pressed(KeyCode::KeyD) {
                 motion.acceleration_vec.x = -motion.thrust_amount;
             } else {
                 motion.acceleration_vec.x = 0.;
@@ -68,19 +79,19 @@ pub fn system_update_game_input_keyboard_mouse(
             let mut accelerated = false;
 
             // handle thrust forward / backward
-            if keyboard_input.pressed(KeyCode::KeyW) {
+            if keyboard_button.pressed(KeyCode::KeyW) {
                 motion.acceleration_vec = (transform.rotation * Vec3::Y * motion.thrust_amount).truncate();
                 accelerated = true;
-            } else if keyboard_input.pressed(KeyCode::KeyS) {
+            } else if keyboard_button.pressed(KeyCode::KeyS) {
                 motion.acceleration_vec = (transform.rotation * Vec3::Y * -motion.thrust_amount).truncate();
                 accelerated = true;
             }
 
             // handle thrust left / right
-            if keyboard_input.pressed(KeyCode::KeyA) {
+            if keyboard_button.pressed(KeyCode::KeyA) {
                 motion.acceleration_vec = (transform.rotation * Vec3::X * -motion.thrust_amount).truncate();
                 accelerated = true;
-            } else if keyboard_input.pressed(KeyCode::KeyD) {
+            } else if keyboard_button.pressed(KeyCode::KeyD) {
                 motion.acceleration_vec = (transform.rotation * Vec3::X * motion.thrust_amount).truncate();
                 accelerated = true;
             }
@@ -92,41 +103,45 @@ pub fn system_update_game_input_keyboard_mouse(
     }
 
     // handle deacceleration
-    if keyboard_input.just_pressed(KeyCode::Space) {
+    if keyboard_button.just_pressed(KeyCode::Space) {
         //todo: deaccelerate. don't touch velocity and don't just stop
         motion.velocity = Vec2::ZERO;
         motion.acceleration_vec = Vec2::ZERO;
     }
 
     // handle rotation speed
-    if keyboard_input.just_pressed(KeyCode::KeyU) {
+    if keyboard_button.just_pressed(KeyCode::KeyU) {
         motion.rotation_speed = DEFAULT_ROTATION_SPEED;
-    } else if keyboard_input.just_pressed(KeyCode::KeyN) {
+    } else if keyboard_button.just_pressed(KeyCode::KeyN) {
         motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.5;
-    } else if keyboard_input.just_pressed(KeyCode::KeyM) {
+    } else if keyboard_button.just_pressed(KeyCode::KeyM) {
         motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.25;
     }
 
     // handle thrust amount
-    if keyboard_input.just_pressed(KeyCode::KeyF) {
+    if keyboard_button.just_pressed(KeyCode::KeyF) {
         motion.thrust_amount = DEFAULT_ACCELERATION;
-    } else if keyboard_input.just_pressed(KeyCode::KeyG) {
+    } else if keyboard_button.just_pressed(KeyCode::KeyG) {
         motion.thrust_amount = DEFAULT_ACCELERATION * 0.5;
-    } else if keyboard_input.just_pressed(KeyCode::KeyV) {
+    } else if keyboard_button.just_pressed(KeyCode::KeyV) {
         motion.thrust_amount = DEFAULT_ACCELERATION * 0.25;
     }
 
     // handle primary
     if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(0) {
         equipment_installation.using =
-            keyboard_input.pressed(KeyCode::KeyJ) || mouse_input.pressed(MouseButton::Left);
+            keyboard_button.pressed(KeyCode::KeyJ) || mouse_button.pressed(MouseButton::Left);
     }
 
     // handle secondary
     if let Some(equipment_installation) = equipment_inventory.mounted_at_mut(1) {
         equipment_installation.using =
-            keyboard_input.pressed(KeyCode::Quote) || mouse_input.pressed(MouseButton::Right);
+            keyboard_button.pressed(KeyCode::Quote) || mouse_button.pressed(MouseButton::Right);
     }
+
+    // update last mouse positioni
+    last_mouse_position.window_position = mouse_position.window_position;
+    last_mouse_position.position = mouse_position.position;
 }
 
 pub fn _gamepad_input(

@@ -1,6 +1,21 @@
 use bevy::prelude::*;
 use crate::*;
 
+#[derive(Resource, Default)]
+pub struct MousePosition {
+    pub window_position: Option<Vec2>,
+    pub position: Option<Vec2>,
+}
+
+impl MousePosition {
+    pub fn pair(&self) -> Option<(&Vec2, &Vec2)> {
+        match (&self.position, &self.window_position) {
+            (Some(position), Some(window_position)) => Some((position, window_position)),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Resource)]
 pub struct PlayerConfigs {
     pub configs: Vec<PlayerConfig>,
