@@ -2,6 +2,8 @@ Galacksi Orbit
 ========================================================================================================================
 *A multiplayer space shooter set in the Galacksi universe.*
 
+<picture><source media="(min-width: 300px)" srcset="../../docs/www/images/galacksi_markdown.svg"></picture>
+
 ![Galacksi](../../docs/www/images/galacksi_markdown.svg)
 
 Standalone Installation
