@@ -1,10 +1,22 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
+use crate::*;
 use crate::consts::*;
 
-pub const MAX_MOUNTED_EQUIPMENT: usize = 4;
+#[derive(Component, Default, Deref, DerefMut)]
+pub struct BodyAction(Action);
 
-#[derive(Component, Default)]
-pub struct Orb;
+#[derive(Component)]
+pub struct Orb {
+    pub blueprint_id: BlueprintID,
+}
+
+impl Orb {
+    pub fn new(blueprint_id: BlueprintID) -> Self {
+        Self {
+            blueprint_id,
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct OnGameScreen;
@@ -14,41 +26,37 @@ pub struct OrbCursor;
 
 /// Installed equipment
 #[derive(Component, Default, Deref, DerefMut)]
-pub struct EquipmentInventory(pub HashMap<usize, InstalledEquipment>);
+pub struct EquipmentStates(pub Vec<EquipmentState>);
 
-impl EquipmentInventory {
-    pub fn mounted_at(&self, index: usize) -> Option<&InstalledEquipment> {
-        self.iter().find(|(_, equipment)| equipment.mounted_at == Some(index))
-            .map(|(_, equipment)| equipment)
+impl EquipmentStates {
+    pub fn mounted_at(&self, index: usize) -> Option<&EquipmentState> {
+        self.iter().find(|state| state.mount_point == Some(index))
     }
 
-    pub fn mounted_at_mut(&mut self, index: usize) -> Option<&mut InstalledEquipment> {
-        self.iter_mut().find(|(_, equipment)| equipment.mounted_at == Some(index))
-            .map(|(_, equipment)| equipment)
-    }
-
-    pub fn reset_use(&mut self) {
-        for (_, equipment) in self.iter_mut() {
-            equipment.using = false;
-        }
+    pub fn mounted_at_mut(&mut self, index: usize) -> Option<&mut EquipmentState> {
+        self.iter_mut().find(|state| state.mount_point == Some(index))
     }
 }
 
 #[derive(Default)]
-pub struct InstalledEquipment {
-    pub id: usize,
+pub struct EquipmentState {
+    pub equipment_id: EquipmentID,
     pub using: bool,
-    pub mounted_at: Option<usize>,
+    pub mount_point: Option<usize>,
     pub last_used: f32,
 }
 
-impl InstalledEquipment {
-    pub fn new_mounted(id: usize, mounted_at: usize) -> Self {
+impl EquipmentState {
+    pub fn new_mounted(equipment_id: EquipmentID, mount_point: usize) -> Self {
         Self {
-            id,
-            mounted_at: Some(mounted_at),
+            equipment_id,
+            mount_point: Some(mount_point),
             ..default()
         }
+    }
+
+    pub fn equipment(&self) -> &Equipment {
+        &BASE_EQUIPMENT[self.equipment_id as usize]
     }
 }
 

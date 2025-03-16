@@ -3,9 +3,10 @@ use crate::*;
 use super::*;
 
 pub const MAX_ORB_SPEED: f32 = 500.;
-pub const BULLET_SPEED: f32 = 1000.;
+//pub const BULLET_SPEED: f32 = 1000.;
 
 pub struct OrbSpawner {
+    pub blueprint_id: Option<BlueprintID>,
     pub transform: Option<Transform>,
     pub color: Option<Color>,
     pub local_player: Option<LocalPlayer>,
@@ -14,6 +15,7 @@ pub struct OrbSpawner {
 impl OrbSpawner {
     pub fn new() -> Self {
         Self {
+            blueprint_id: None,
             transform: None,
             color: None,
             local_player: None,
@@ -22,6 +24,7 @@ impl OrbSpawner {
 
     pub fn local_player1() -> Self {
         Self {
+            blueprint_id: Some(Blueprints::ID_MID),
             transform: Some(Transform::from_xyz(0., 0., 1.)),
             color: None,
             local_player: Some(LocalPlayer {
@@ -47,6 +50,7 @@ impl OrbSpawner {
         transform.translation += team_offset;
 
         Self {
+            blueprint_id: Some(Blueprints::ID_MID),
             transform: Some(transform),
             color: None,
             local_player: Some(LocalPlayer {
@@ -78,6 +82,8 @@ impl OrbSpawner {
     fn validate_fill(&mut self) -> Result<(), &'static str> {
         if self.transform.is_none() {
             return Err("Transform is not set")
+        } else if self.blueprint_id.is_none() {
+            return Err("Blueprint ID is not set")
         } else if self.color.is_none() {
             self.color = Some(Self::default_color());
         }
@@ -96,9 +102,10 @@ impl OrbSpawner {
         let color = self.color.unwrap();
         let transform = self.transform.unwrap();
         let position = transform.translation.truncate();
+        let blueprint_id = self.blueprint_id.unwrap();
 
         let mut orb = commands.spawn((
-            Orb,
+            Orb::new(blueprint_id),
             Mesh2d(meshes.add(Circle::new(10.))),
             MeshMaterial2d(materials.add(color)),
             transform,
@@ -108,7 +115,10 @@ impl OrbSpawner {
                 ..default()
             },
             LastPosition(position),
-            EquipmentInventory([(0, InstalledEquipment::new_mounted(0, 0))].into_iter().collect()),
+            BodyAction::default(),
+            EquipmentStates([
+                    EquipmentState::new_mounted(EQUIPMENT_ID_GATTLING_GUN, 0),
+                ].into_iter().collect()),
             OnGameScreen
         ));
 
@@ -144,8 +154,11 @@ impl BulletSpawner {
         Self::default()
     }
 
-    pub fn from_orb(orb_motion: &Motion, orb_transform: &Transform) -> Self {
-        let speed = orb_motion.velocity.length() + BULLET_SPEED;
+    pub fn from_orb(orb_motion: &Motion, orb_transform: &Transform, blueprints: &Res<Blueprints>) -> Self {
+        let blueprint = blueprints.get(&Blueprints::ID_GATTLING_GUN_BULLET)
+            .expect("Gattling gun bullet blueprint not found");
+
+        let speed = orb_motion.velocity.length() + blueprint.max_speed;
         let angle = orb_transform.rotation * Vec3::Y;
         let position = orb_motion.position.extend(1.) + angle * 40.;
 
@@ -212,6 +225,7 @@ impl BulletSpawner {
 
         commands.spawn((
             OrbBullet,
+            BodyAction::default(),
             Mesh2d(meshes.add(Circle::new(1.))),
             MeshMaterial2d(materials.add(color)),
             transform,

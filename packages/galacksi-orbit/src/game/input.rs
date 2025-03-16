@@ -20,38 +20,38 @@ use super::*;
 /// M sets rotation speed to 25%
 ///
 pub fn system_update_game_input_keyboard_mouse(
-    mut query: Query<(&LocalPlayer, &mut Motion, &mut Transform, &mut EquipmentInventory),With<Orb>>,
+    mut query: Query<(&Orb, &LocalPlayer, &mut Motion, &mut BodyAction, &Transform, &mut EquipmentStates)>,
+    mut last_mouse_position: ResMut<LastMouseGamePosition>,
     keyboard_button: Res<ButtonInput<KeyCode>>,
     mouse_button: Res<ButtonInput<MouseButton>>,
     mouse_position: Res<MousePosition>,
-    mut last_mouse_position: ResMut<LastMouseGamePosition>,
     console_open: Res<ConsoleOpen>,
-    player_configs: Res<PlayerConfigs>
+    player_configs: Res<PlayerConfigs>,
+    blueprints: Res<Blueprints>
 ) {
     if console_open.open {
         return;
     }
 
-    let (local_player, mut motion, mut transform, mut equipment_inventory) = query.iter_mut()
-        .find(|(local_player, _, _, _)| local_player.num == 0)
+    let (orb, local_player, mut motion, mut action, transform, mut equipment_inventory) = query.iter_mut()
+        .find(|(_, local_player, _, _, _, _)| local_player.num == 0)
         .expect("No local player #1 found");
 
+    let blueprint = blueprints.get(&orb.blueprint_id).expect("Blueprint not found");
     let config = player_configs.for_num(local_player.num);
     let cfg_orientation = config.keyboard.thrust_orientation;
 
     // handle rotation
     if keyboard_button.pressed(KeyCode::KeyK) {
-        motion.rotation_amount = motion.rotation_speed;
+        action.rotate(motion.rotation_speed);
     } else if keyboard_button.pressed(KeyCode::KeyL) {
-        motion.rotation_amount = -motion.rotation_speed;
+        action.rotate(-motion.rotation_speed);
     } else if let Some(mouse_cursor) = mouse_position.position {
         if last_mouse_position.window_position.is_none() || last_mouse_position.window_position != mouse_position.window_position {
             let dir = transform.local_y().truncate();
             let cursor_dir = mouse_cursor - transform.translation.truncate();
             let angle = dir.angle_to(cursor_dir);
-            motion.rotation_amount = angle;
-
-            dbg!(angle, mouse_cursor, motion.position);
+            action.rotate(angle);
         }
     }
 
@@ -59,20 +59,20 @@ pub fn system_update_game_input_keyboard_mouse(
         Absolute => {
             // handle thrust forward / backward
             if keyboard_button.pressed(KeyCode::KeyW) {
-                motion.acceleration_vec.y = motion.thrust_amount;
+                action.accelerate_max_y(blueprint);
             } else if keyboard_button.pressed(KeyCode::KeyS) {
-                motion.acceleration_vec.y = -motion.thrust_amount;
+                action.accelerate_max_y_inverse(blueprint);
             } else {
-                motion.acceleration_vec.y = 0.;
+                action.accelerate_y(blueprint, 0.);
             }
 
             // handle thrust left / right
             if keyboard_button.pressed(KeyCode::KeyA) {
-                motion.acceleration_vec.x = motion.thrust_amount;
+                action.accelerate_max_x_inverse(blueprint);
             } else if keyboard_button.pressed(KeyCode::KeyD) {
-                motion.acceleration_vec.x = -motion.thrust_amount;
+                action.accelerate_max_x(blueprint);
             } else {
-                motion.acceleration_vec.x = 0.;
+                action.accelerate_x(blueprint, 0.);
             }
         },
         Relative => {
@@ -80,42 +80,47 @@ pub fn system_update_game_input_keyboard_mouse(
 
             // handle thrust forward / backward
             if keyboard_button.pressed(KeyCode::KeyW) {
-                motion.acceleration_vec = (transform.rotation * Vec3::Y * motion.thrust_amount).truncate();
+                //motion.acceleration_vec = (transform.rotation * Vec3::Y * motion.thrust_amount).truncate();
+                action.accelerate_relative_max_y(blueprint, &transform.rotation);
                 accelerated = true;
             } else if keyboard_button.pressed(KeyCode::KeyS) {
-                motion.acceleration_vec = (transform.rotation * Vec3::Y * -motion.thrust_amount).truncate();
+                //motion.acceleration_vec = (transform.rotation * Vec3::Y * -motion.thrust_amount).truncate();
+                action.accelerate_relative_max_y_inverse(blueprint, &transform.rotation);
                 accelerated = true;
             }
 
             // handle thrust left / right
             if keyboard_button.pressed(KeyCode::KeyA) {
-                motion.acceleration_vec = (transform.rotation * Vec3::X * -motion.thrust_amount).truncate();
+                //motion.acceleration_vec = (transform.rotation * Vec3::X * -motion.thrust_amount).truncate();
+                action.accelerate_relative_max_x_inverse(blueprint, &transform.rotation);
                 accelerated = true;
             } else if keyboard_button.pressed(KeyCode::KeyD) {
-                motion.acceleration_vec = (transform.rotation * Vec3::X * motion.thrust_amount).truncate();
+                //motion.acceleration_vec = (transform.rotation * Vec3::X * motion.thrust_amount).truncate();
+                action.accelerate_relative_max_x(blueprint, &transform.rotation);
                 accelerated = true;
             }
 
             if !accelerated {
-                motion.acceleration_vec = Vec2::ZERO;
+                action.accelerate(blueprint, Vec2::ZERO);
             }
         }
     }
 
     // handle deacceleration
-    if keyboard_button.just_pressed(KeyCode::Space) {
-        //todo: deaccelerate. don't touch velocity and don't just stop
-        motion.velocity = Vec2::ZERO;
-        motion.acceleration_vec = Vec2::ZERO;
+    if keyboard_button.pressed(KeyCode::Space) {
+        action.deaccelerate();
+    } else {
+        action.stop_deaccelerating();
     }
 
     // handle rotation speed
     if keyboard_button.just_pressed(KeyCode::KeyU) {
-        motion.rotation_speed = DEFAULT_ROTATION_SPEED;
+        //motion.rotation_speed = DEFAULT_ROTATION_SPEED;
+        motion.rotation_speed = blueprint.max_rotation_speed;
     } else if keyboard_button.just_pressed(KeyCode::KeyN) {
-        motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.5;
+        motion.rotation_speed = blueprint.max_rotation_speed * 0.5;
     } else if keyboard_button.just_pressed(KeyCode::KeyM) {
-        motion.rotation_speed = DEFAULT_ROTATION_SPEED * 0.25;
+        motion.rotation_speed = blueprint.max_rotation_speed * 0.25;
     }
 
     // handle thrust amount

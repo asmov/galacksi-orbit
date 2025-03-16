@@ -10,9 +10,10 @@ pub mod config;
 pub mod console;
 pub mod component;
 pub mod system;
+pub mod ui;
 mod run;
 
-pub use {console::*, model::*, resource::*, config::*, color::*, util::*, system::*, run::run};
+pub use {console::*, model::*, resource::*, config::*, color::*, util::*, system::*, ui::*, run::run, title::*};
 
 #[cfg(feature = "steam")]
 pub mod steam;

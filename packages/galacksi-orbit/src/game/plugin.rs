@@ -5,6 +5,7 @@ use super::*;
 pub fn plugin_game(app: &mut App) {
     app
         .init_resource::<LastMouseGamePosition>()
+        .init_resource::<Blueprints>()
         .add_systems(OnEnter(Mode::Game), (
             system_enter_game,
         ))

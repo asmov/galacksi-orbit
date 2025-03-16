@@ -54,6 +54,7 @@ bevy-steamworks = { optional = true, version = "0", features = ["serde"] }
 bevy_console = { git="https://github.com/RichoDemus/bevy-console.git" }
 bevy_egui = "0.31" # bump with bevy_console
 bevy_tiling_background = "0.12"
+bitcode = "0.6.5"
 clap = { version = "4.5", features = ["derive"] }
 rand = "0.8"
 strum = { version = "0", features = ["derive"] }

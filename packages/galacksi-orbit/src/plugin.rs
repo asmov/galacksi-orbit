@@ -46,5 +46,12 @@ impl Plugin for OrbitPlugin {
                 #[cfg(feature = "steam")] steam::plugin_steam,
             ))
             .add_systems(Startup, system_startup_greet_console.after(ConsoleSet::ConsoleUI));
+
+        #[cfg(debug_assertions)] {
+            app.add_plugins((
+                bevy::diagnostic::FrameTimeDiagnosticsPlugin,
+                bevy::diagnostic::LogDiagnosticsPlugin::default()
+            ));
+        }
     }
 }

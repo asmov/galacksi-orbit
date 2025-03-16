@@ -90,15 +90,14 @@ impl Palette {
     }
 
     pub fn rand_button_text() -> Color {
-        match rand::random::<u8>() % 8 {
-            0 => palette::BLOOM_WHITE,
-            1 => palette::BLOOM_RED,
-            2 => palette::BLOOM_GREEN,
-            3 => palette::BLOOM_PURPLE,
-            4 => palette::BLOOM_YELLOW,
-            5 => palette::BLOOM_CYAN,
-            6 => palette::BLOOM_ORANGE,
-            7 => palette::BLOOM_VIOLET,
+        match rand::random::<u8>() % 7 {
+            0 => palette::BLOOM_RED,
+            1 => palette::BLOOM_GREEN,
+            2 => palette::BLOOM_PURPLE,
+            3 => palette::BLOOM_YELLOW,
+            4 => palette::BLOOM_CYAN,
+            5 => palette::BLOOM_ORANGE,
+            6 => palette::BLOOM_VIOLET,
             _ => unreachable!()
         }
     }
