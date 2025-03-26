@@ -4,7 +4,7 @@ Galacksi Orbit
 
 <picture><source media="(min-width: 300px)" srcset="../../docs/www/images/galacksi_markdown.svg"></picture>
 
-![Galacksi](../../docs/www/images/galacksi_markdown.svg)
+![Galacksi](../../docs/www/images/galacksi-orbit_markdown.svg)
 
 Standalone Installation
 ------------------------------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ Standalone Installation
 5. Run the game with Cargo: `cargo run --release --bin galacksi-orbit`
 6. Install the standalone game: `cargo install --path packages/galacksi-orbit`
 
-To update the standalone game:  
+To update the standalone game:
 1. Pull updates: `git pull --rebase`
 2. Clean the build (optional): `cargo clean`
 2. Perform installation steps 4-6.
@@ -28,10 +28,10 @@ To update the standalone game:
 
 License (AGPL3 & CC-BY-SA-4)
 ------------------------------------------------------------------------------------------------------------------------
-Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe  
-Copyright (C) 2025 Asmov LLC  
-Asmov is a trademark (TM) of Asmov LLC  
-Galacksi is a trademark (TM) of Asmov LLC  
+Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe
+Copyright (C) 2025 Asmov LLC
+Asmov is a trademark (TM) of Asmov LLC
+Galacksi is a trademark (TM) of Asmov LLC
 
 This distribution is comprised of Software and Multimedia assets (images, videos, sounds, music, etc.).
 

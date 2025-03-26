@@ -2,7 +2,7 @@ Galacksi Orbit
 ========================================================================================================================
 *A multiplayer space shooter set in the Galacksi universe.*
 
-![Galacksi](./docs/www/images/galacksi_markdown.svg)
+![Galacksi](./docs/www/images/galacksi-orbit_markdown.svg)
 
 
 Packages
@@ -12,10 +12,10 @@ Packages
 
 License (AGPL3 & CC-BY-SA-4)
 ------------------------------------------------------------------------------------------------------------------------
-Galacksi Orbit: A multiplayer space shooter set in the Galacksi universe  
-Copyright (C) 2025 Asmov LLC  
-Asmov is a trademark (TM) of Asmov LLC  
-Galacksi is a trademark (TM) of Asmov LLC  
+Galacksi Orbit: A multiplayer space shooter set in the Galacksi universe
+Copyright (C) 2025 Asmov LLC
+Asmov is a trademark (TM) of Asmov LLC
+Galacksi is a trademark (TM) of Asmov LLC
 
 This distribution is comprised of Software and Multimedia assets (images, videos, sounds, music, etc.).
 
