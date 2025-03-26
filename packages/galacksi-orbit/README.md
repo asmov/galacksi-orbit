@@ -28,7 +28,7 @@ To update the standalone game:
 
 License (AGPL3 & CC-BY-SA-4)
 ------------------------------------------------------------------------------------------------------------------------
-Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe
+Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe  
 Copyright (C) 2025 Asmov LLC  
 Asmov is a trademark (TM) of Asmov LLC  
 Galacksi is a trademark (TM) of Asmov LLC  
