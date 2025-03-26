@@ -8,7 +8,36 @@ Copyright (C) 2025 Asmov LLC
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Galacksi Orbit</title>
-<link rel="stylesheet" href="www/css/index.css" />
+<!-- <link rel="stylesheet" href="www/css/index.css" /> -->
+<style>
+html, body
+{
+    height: 100%;
+    margin:0;
+    padding:0;
+}
+
+body {
+  background-color: #282828;
+  color: #eee;
+  font-family: sans-serif;
+}
+
+div {
+    position:relative;
+    height: 100%;
+    width:100%;
+}
+
+div img {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+}
+</style>
 <link rel="icon" type="image/svg+xml" href="www/images/galacksi-orbit.svg" />
 <meta property="og:title" content="Galacksi Orbit" />
 <meta property="og:type" content="website" />
@@ -17,6 +46,6 @@ Copyright (C) 2025 Asmov LLC
 <meta property="og:description" content="Multiplayer space shooter set in the Galacksi universe" />
 </head>
 <body>
-<img id="front" src="www/images/galacksi-orbit.svg" />
+<div><img src="www/images/galacksi-orbit.svg"/></div>
 </body>
 </html>
