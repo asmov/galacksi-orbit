@@ -1,3 +1,4 @@
+pub mod brand;
 pub mod plugin;
 pub mod model;
 pub mod color;

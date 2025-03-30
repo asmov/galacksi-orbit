@@ -1,12 +1,12 @@
 [package]
 name = "galacksi-orbit-server"
 version = "0.1.0"
-edition = "2024"
-description = "Multiplayer server for the Galacksi Orbit"
+description = "Multiplayer server for Galacksi Orbit"
 authors = ["Asmov LLC <development.pub@asmov.software>"]
-repository = "https://github.com/asmov/galacks-orbit"
+repository = "https://github.com/asmov/galacksi-orbit"
 license = "AGPL-3.0-or-later"
 keywords = ["galacksi", "orbit", "multiplayer", "space", "shooter"]
 categories = ["games"]
+edition = "2024"
 
 [dependencies]

@@ -1,4 +1,5 @@
-# NOTES for Galacksi Orbit
+NOTES: Galacksi Orbit
+================================================================================
 
 ## Steam on COSMIC
 

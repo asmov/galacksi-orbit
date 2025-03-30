@@ -1,33 +1,42 @@
 Galacksi Orbit
-========================================================================================================================
-*A multiplayer space shooter set in the Galacksi universe.*
-
-![Galacksi](./docs/www/images/galacksi-orbit_markdown.svg)
+================================================================================
+*Multiplayer space shooter set in the Galacksi universe*
 
 
 Packages
-------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 - [Game](./packages/galacksi-orbit)
 - [Server](./packages/galacksi-orbit-server)
 
-License (AGPL3 & CC-BY-SA-4)
-------------------------------------------------------------------------------------------------------------------------
-Galacksi Orbit: A multiplayer space shooter set in the Galacksi universe  
-Copyright (C) 2025 Asmov LLC  
-Asmov is a trademark (TM) of Asmov LLC  
-Galacksi is a trademark (TM) of Asmov LLC
 
-This distribution is comprised of Software and Multimedia assets (images, videos, sounds, music, etc.).
+Repository
+--------------------------------------------------------------------------------
+Contributors, please review [ASMOV.md](./ASMOV.md).  
 
-Software is licensed under the terms of the GNU Affero Publice License 3.0 (AGPL-3) license.
+Found a bug? Search for an existing issue on GitHub.  
+If an issue exists, chime in to add weight to it.  
+If an issue does not exist, create one and tell us how to reproduce the bug. 
 
-Multimedia assets that do not portray elements of brand or trademark are licensed under the terms of the
-Community Commons Attribution ShareAlike 4.0 International (CC-BY-SA-4) license.
 
-All rights are reserved for Multimedia assets that portray elements of brand or trademark.
+License (AGPL3)
+--------------------------------------------------------------------------------
+Galacksi Orbit: Multiplayer space shooter set in the Galacksi universe  
+Copyright (C) 2025 [Asmov LLC](https://asmov.software)  
 
-You should have received copying and license files for each license with this software:
-  - COPYING-AGPL-3.txt and LICENSE-AGPL-3.txt
-  - COPYING-CC-BY-SA-4.txt and LICENSE-CC-BY-SA-4.txt
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-Each subcomponent of this distribution may contain specific copying instructions and licensing terms.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a [copy](./LICENSE-AGPL-3.txt) of the GNU Affero General Public License
+along with this program.  If not, see https://www.gnu.org/licenses/.
+
+
+Trademark
+--------------------------------------------------------------------------------
+*Galacksi* is a trademark of Asmov LLC.

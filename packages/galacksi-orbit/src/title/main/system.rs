@@ -6,8 +6,6 @@ pub(in crate::title) fn system_enter_title(mut title_screen: ResMut<NextState<Ti
     title_screen.set(TitleScreen::Main);
 }
 
-const STR_GALACKSI_ORBIT: &'static str = " G A L A C K S I\nO R B I T";
-
 pub(in crate::title) fn system_enter_title_main(
     mut commands: Commands
 ) {
@@ -47,7 +45,7 @@ pub(in crate::title) fn system_enter_title_main(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        Text(STR_GALACKSI_ORBIT.to_string()),
+                        Text(brand::STR_TITLE.to_string()),
                         TextLayout {
                             justify: JustifyText::Center,
                             ..default()

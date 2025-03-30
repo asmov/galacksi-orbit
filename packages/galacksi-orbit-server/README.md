@@ -1,24 +1,40 @@
-Galacksi Orbit: Server
-========================================================================================================================
+Galacksi Orbit Server
+================================================================================
+[![Latest Version]][crates.io]
+
+[Latest Version]: https://img.shields.io/crates/v/galacksi-orbit-server.svg
+[crates.io]: https://crates.io/crates/galacksi-orbit-server
+
 *Multiplayer server for Galacksi Orbit*
 
 
-License (AGPL3 & CC-BY-SA-4)
-------------------------------------------------------------------------------------------------------------------------
+Repository
+--------------------------------------------------------------------------------
+Contributors, please review [ASMOV.md](./ASMOV.md).  
+
+Found a bug? Search for an existing issue on GitHub.  
+If an issue exists, chime in to add weight to it.  
+If an issue does not exist, create one and tell us how to reproduce the bug. 
+
+License (AGPL3)
+--------------------------------------------------------------------------------
 Galacksi Orbit Server: Multiplayer server for Galacksi Orbit  
-Copyright (C) 2025 Asmov LLC
+Copyright (C) 2025 [Asmov LLC](https://asmov.software)  
 
-This distribution is comprised of Software and Multimedia assets (images, videos, sounds, music, etc.).
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-Software is licensed under the terms of the GNU Affero Publice License 3.0 (AGPL-3) license.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-Multimedia assets that do not portray elements of brand or trademark are licensed under the terms of the
-Community Commons Attribution ShareAlike 4.0 International (CC-BY-SA-4) license.
+You should have received a [copy](./LICENSE-AGPL-3.txt) of the GNU Affero General Public License
+along with this program.  If not, see https://www.gnu.org/licenses/.
 
-All rights are reserved for Multimedia assets that portray elements of brand or trademark.
 
-You should have received copying and license files for each license with this software:
-  - COPYING-AGPL-3.txt and LICENSE-AGPL-3.txt
-  - COPYING-CC-BY-SA-4.txt and LICENSE-CC-BY-SA-4.txt
-
-Each subcomponent of this distribution may contain specific copying instructions and licensing terms.
+Trademark
+--------------------------------------------------------------------------------
+*Galacksi* is a trademark of Asmov LLC.
